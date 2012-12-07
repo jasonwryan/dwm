@@ -1,0 +1,59 @@
+diff -r 8b415c344fce config.def.h
+--- a/config.def.h	Fri Jul 20 19:43:44 2012 +1200
++++ b/config.def.h	Fri Jul 20 19:48:32 2012 +1200
+@@ -111,6 +111,10 @@
+ 	{ MODKEY,                       XK_period, focusmon,       {.i = +1 } },
+ 	{ MODKEY|ShiftMask,             XK_comma,  tagmon,         {.i = -1 } },
+ 	{ MODKEY|ShiftMask,             XK_period, tagmon,         {.i = +1 } },
++	{ MODKEY,                       XK_Left,   cycle,          {.i = -1 } },
++	{ MODKEY,                       XK_Right,  cycle,          {.i = +1 } },
++	{ MODKEY|ControlMask,           XK_Left,   tagcycle,       {.i = -1 } },
++	{ MODKEY|ControlMask,           XK_Right,  tagcycle,       {.i = +1 } },
+ 	TAGKEYS(                        XK_1,                      0)
+ 	TAGKEYS(                        XK_2,                      1)
+ 	TAGKEYS(                        XK_3,                      2)
+diff -r 8b415c344fce dwm.c
+--- a/dwm.c	Fri Jul 20 19:43:44 2012 +1200
++++ b/dwm.c	Fri Jul 20 19:48:32 2012 +1200
+@@ -254,6 +254,9 @@
+ static int xerrordummy(Display *dpy, XErrorEvent *ee);
+ static int xerrorstart(Display *dpy, XErrorEvent *ee);
+ static void zoom(const Arg *arg);
++static void cycle(const Arg *arg);
++static int shifttag(int dist);
++static void tagcycle(const Arg *arg);
+ 
+ /* variables */
+ static const char broken[] = "broken";
+@@ -2194,6 +2197,31 @@
+ }
+ 
+ int
++shifttag(int dist) {
++   int seltags = selmon->tagset[selmon->seltags] & TAGMASK;
++
++   if(dist > 0) // left circular shift
++       seltags = (seltags << dist) | (seltags >> (LENGTH(tags) - dist));
++   else // right circular shift
++       seltags = (seltags >> (- dist)) | (seltags << (LENGTH(tags) + dist));
++
++   return seltags;
++}
++
++void
++cycle(const Arg *arg) {
++   const Arg a = { .i = shifttag(arg->i) };
++   view(&a);
++}
++
++void
++tagcycle(const Arg *arg) {
++   const Arg a = { .i = shifttag(arg->i) };
++   tag(&a);
++   view(&a);
++}
++
++int
+ main(int argc, char *argv[]) {
+ 	if(argc == 2 && !strcmp("-v", argv[1]))
+ 		die("dwm-"VERSION", © 2006-2012 dwm engineers, see LICENSE for details\n");
