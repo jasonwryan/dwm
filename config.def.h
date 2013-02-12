@@ -1,48 +1,59 @@
 /* See LICENSE file for copyright and license details. */
 
 /* appearance */
-static const char font[]            = "-*-terminus-medium-r-*-*-16-*-*-*-*-*-*-*";
-static const char normbordercolor[] = "#444444";
-static const char normbgcolor[]     = "#222222";
-static const char normfgcolor[]     = "#bbbbbb";
-static const char selbordercolor[]  = "#005577";
-static const char selbgcolor[]      = "#005577";
-static const char selfgcolor[]      = "#eeeeee";
+static const char font[]   = "-*-tamsyn-medium-*-*-*-17-*-*-*-*-*-iso8859-*";
+#define NUMCOLORS 9 
+static const char colors[NUMCOLORS][ColLast][9] = {
+// border foreground background
+{ "#212121", "#696969", "#121212" }, // 0 = normal
+{ "#696969", "#E0E0E0", "#121212" }, // 1 = selected
+{ "#212121", "#CF4F88", "#121212" }, // 2 = red
+{ "#212121", "#53A6A6", "#121212" }, // 3 = green
+{ "#212121", "#914E89", "#121212" }, // 4 = yellow
+{ "#212121", "#4779B3", "#121212" }, // 5 = blue
+{ "#212121", "#47959E", "#121212" }, // 6 = cyan
+{ "#212121", "#7E62B3", "#121212" }, // 7 = magenta
+{ "#212121", "#899CA1", "#121212" }, // 8 = grey
+};
 static const unsigned int borderpx  = 1;        /* border pixel of windows */
-static const unsigned int snap      = 32;       /* snap pixel */
+static const unsigned int snap      = 8;        /* snap pixel */
 static const Bool showbar           = True;     /* False means no bar */
 static const Bool topbar            = True;     /* False means bottom bar */
 
 /* tagging */
-static const char *tags[] = { "1", "2", "3", "4", "5", "6", "7", "8", "9" };
+static const char *tags[] = { "base", "web", "term", "mail", };
 
 static const Rule rules[] = {
-	/* xprop(1):
-	 *	WM_CLASS(STRING) = instance, class
-	 *	WM_NAME(STRING) = title
-	 */
-	/* class      instance    title       tags mask     isfloating   monitor */
-	{ "Gimp",     NULL,       NULL,       0,            True,        -1 },
-	{ "Firefox",  NULL,       NULL,       1 << 8,       False,       -1 },
+   { "Vimprobable", NULL,       NULL,       1 << 1,       False,       -1 },
+   { "Chromium",    NULL,       NULL,       1 << 0,       False,       -1 },
+   { "Tabbed",      NULL,       NULL,       1 << 1,       False,       -1 },
+   { "Skype",       NULL,       NULL,       1 << 0,       True,        -1 },
+   { "Filezilla",   NULL,       NULL,       1 << 0,       True,        -1 },
+   { "MPlayer",     NULL,       NULL,       1 << 0,       True,        -1 },
+   { "Truecrypt",   NULL,       NULL,       1 << 0,       True,        -1 },
+   {  NULL,         NULL,      "mutt",      1 << 3,       False,       -1 },
+   {  NULL,         NULL,      "tmux",      1 << 2,       False,       -1 },
+   {  NULL,         NULL,      "ssh",       1 << 0,       False,       -1 },
+   {  NULL,         NULL,      "scratchpad",     0,       True,        -1 },
 };
 
 /* layout(s) */
-static const float mfact      = 0.55; /* factor of master area size [0.05..0.95] */
-static const int nmaster      = 1;    /* number of clients in master area */
-static const Bool resizehints = True; /* True means respect size hints in tiled resizals */
+static const float mfact      = 0.60;  /* factor of master area size [0.05..0.95] */
+static const int nmaster      = 1;     /* number of clients in master area */
+static const Bool resizehints = False; /* True means respect size hints in tiled resizals */
 
 static const Layout layouts[] = {
 	/* symbol     arrange function */
-	{ "[]=",      tile },    /* first entry is default */
-	{ "><>",      NULL },    /* no layout function means floating behavior */
+	{ "[T]",      tile },    /* first entry is default */
+	{ "[F]",      NULL },    /* no layout function means floating behavior */
 	{ "[M]",      monocle },
 };
 
 /* key definitions */
-#define MODKEY Mod1Mask
+#define MODKEY Mod4Mask
 #define TAGKEYS(KEY,TAG) \
-	{ MODKEY,                       KEY,      view,           {.ui = 1 << TAG} }, \
-	{ MODKEY|ControlMask,           KEY,      toggleview,     {.ui = 1 << TAG} }, \
+	{ MODKEY,                       KEY,      toggleview,     {.ui = 1 << TAG} }, \
+	{ MODKEY|ControlMask,           KEY,      view,           {.ui = 1 << TAG} }, \
 	{ MODKEY|ShiftMask,             KEY,      tag,            {.ui = 1 << TAG} }, \
 	{ MODKEY|ControlMask|ShiftMask, KEY,      toggletag,      {.ui = 1 << TAG} },
 
@@ -50,16 +61,35 @@ static const Layout layouts[] = {
 #define SHCMD(cmd) { .v = (const char*[]){ "/bin/sh", "-c", cmd, NULL } }
 
 /* commands */
-static const char *dmenucmd[] = { "dmenu_run", "-fn", font, "-nb", normbgcolor, "-nf", normfgcolor, "-sb", selbgcolor, "-sf", selfgcolor, NULL };
-static const char *termcmd[]  = { "uxterm", NULL };
+static const char  *dmenucmd[] = { "dmenu_run", "-fn", font, "-nb", colors[0][ColBG], "-nf", colors[0][ColFG], "-sb", colors[1][ColBG], "-sf", colors[1][ColFG], NULL };
+static const char   *termcmd[] = { "urxvtc", NULL };
+static const char  *xtermcmd[] = { "xterm",  NULL };
+static const char   *mailcmd[] = { "urxvtc", "-title", "mutt", "-e", "mutt", NULL };
+static const char   *tmuxcmd[] = { "urxvtc", "-title", "tmux", "-e", "tmux", "-f", "/home/jason/.tmux/conf", NULL };
+static const char    *padcmd[] = { "urxvtc", "-title", "scratchpad", "-geometry", "56x10-30+40", NULL };
+static const char   *lockcmd[] = { "xautolock", "-locknow", NULL };
+static const char *rebootcmd[] = { "systemctl", "reboot", NULL };
+static const char   *shutcmd[] = { "systemctl", "poweroff", NULL };
 
 static Key keys[] = {
 	/* modifier                     key        function        argument */
-	{ MODKEY,                       XK_p,      spawn,          {.v = dmenucmd } },
+	{ 0,                            XK_Menu,   spawn,          {.v = dmenucmd } },
 	{ MODKEY|ShiftMask,             XK_Return, spawn,          {.v = termcmd } },
+	{ ControlMask|Mod1Mask,         XK_m,      spawn,          {.v = mailcmd } },
+	{ ControlMask|Mod1Mask,         XK_x,      spawn,          {.v = xtermcmd } },
+	{ ControlMask|Mod1Mask,         XK_t,      spawn,          {.v = tmuxcmd } },
+	{ ControlMask|Mod1Mask,         XK_l,      spawn,          {.v = lockcmd } },
+	{ ControlMask|Mod1Mask,         XK_p,      spawn,          {.v = padcmd } },
+	{ ControlMask|Mod1Mask,         XK_r,      spawn,          {.v = rebootcmd } },
+	{ ControlMask|Mod1Mask,         XK_q,      spawn,          {.v = shutcmd } },
+	{ ControlMask|Mod1Mask,         XK_s,      spawn,          SHCMD("$HOME/Scripts/shux") },
+	{ ControlMask|Mod1Mask,         XK_a,      spawn,          SHCMD("$HOME/Scripts/autostart") },
+	{ ControlMask|Mod1Mask,         XK_w,      spawn,          SHCMD("$(tabbed -d >/tmp/tabbed.xid); vimprobable2 -e $(</tmp/tabbed.xid)") },
 	{ MODKEY,                       XK_b,      togglebar,      {0} },
 	{ MODKEY,                       XK_j,      focusstack,     {.i = +1 } },
 	{ MODKEY,                       XK_k,      focusstack,     {.i = -1 } },
+	{ MODKEY|ControlMask,           XK_j,      pushdown,       {0} },
+	{ MODKEY|ControlMask,           XK_k,      pushup,         {0} },
 	{ MODKEY,                       XK_i,      incnmaster,     {.i = +1 } },
 	{ MODKEY,                       XK_d,      incnmaster,     {.i = -1 } },
 	{ MODKEY,                       XK_h,      setmfact,       {.f = -0.05} },
@@ -78,6 +108,10 @@ static Key keys[] = {
 	{ MODKEY,                       XK_period, focusmon,       {.i = +1 } },
 	{ MODKEY|ShiftMask,             XK_comma,  tagmon,         {.i = -1 } },
 	{ MODKEY|ShiftMask,             XK_period, tagmon,         {.i = +1 } },
+	{ MODKEY,                       XK_Left,   cycle,          {.i = -1 } },
+	{ MODKEY,                       XK_Right,  cycle,          {.i = +1 } },
+	{ MODKEY|ControlMask,           XK_Left,   tagcycle,       {.i = -1 } },
+	{ MODKEY|ControlMask,           XK_Right,  tagcycle,       {.i = +1 } },
 	TAGKEYS(                        XK_1,                      0)
 	TAGKEYS(                        XK_2,                      1)
 	TAGKEYS(                        XK_3,                      2)
