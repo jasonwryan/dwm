@@ -1891,10 +1891,20 @@ toggletag(const Arg *arg) {
 void
 toggleview(const Arg *arg) {
 	unsigned int newtagset = selmon->tagset[selmon->seltags] ^ (arg->ui & TAGMASK);
+	Client *c = NULL;
+	unsigned int found = 0;
 
 	if(newtagset) {
 		selmon->tagset[selmon->seltags] = newtagset;
-		focus(NULL);
+
+		for(c = selmon->clients; c && !(found = c->tags & arg->ui); c = c->next);
+		if(found && ISVISIBLE(c)) {
+			detach(c);
+			attach(c);
+			focus(c);
+		}
+		else
+			focus(NULL);
 		arrange(selmon);
 	}
 }
