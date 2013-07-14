@@ -1,0 +1,38 @@
+From 3ea5e664f3d33443d33cbcf4c1043d01ae77111b Mon Sep 17 00:00:00 2001
+From: Jason Ryan <jasonwryan@gmail.com>
+Date: Sun, 14 Jul 2013 14:31:41 +1200
+Subject: [PATCH] Patched new_master
+
+---
+ dwm.c | 12 +++++++++++-
+ 1 file changed, 11 insertions(+), 1 deletion(-)
+
+diff --git a/dwm.c b/dwm.c
+index f041955..96df6f6 100644
+--- a/dwm.c
++++ b/dwm.c
+@@ -1891,10 +1891,20 @@ toggletag(const Arg *arg) {
+ void
+ toggleview(const Arg *arg) {
+ 	unsigned int newtagset = selmon->tagset[selmon->seltags] ^ (arg->ui & TAGMASK);
++	Client *c = NULL;
++	unsigned int found = 0;
+ 
+ 	if(newtagset) {
+ 		selmon->tagset[selmon->seltags] = newtagset;
+-		focus(NULL);
++
++		for(c = selmon->clients; c && !(found = c->tags & arg->ui); c = c->next);
++		if(found && ISVISIBLE(c)) {
++			detach(c);
++			attach(c);
++			focus(c);
++		}
++		else
++			focus(NULL);
+ 		arrange(selmon);
+ 	}
+ }
+-- 
+1.8.3.2
+
