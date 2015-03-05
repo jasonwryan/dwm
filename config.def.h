@@ -1,7 +1,7 @@
 /* See LICENSE file for copyright and license details. */
 
 /* appearance */
-static const char font[]            = "Dejavu Sans Mono:medium:size=10.5";
+static const char font[]            = "Dejavu Sans Mono:medium:size=7.5";
 #define NUMCOLORS 9
 static const char colors[NUMCOLORS][ColLast][9] = {
 // border foreground background
@@ -29,6 +29,9 @@ static const Rule rules[] = {
    { "Chromium",    NULL,       NULL,       1 << 0,       False,       -1 },
    { "tabbed",      NULL,       NULL,       1 << 1,       False,       -1 },
    { "mpv",         NULL,       NULL,       1 << 0,       True,        -1 },
+   { "Gimp",        NULL,       NULL,       1 << 0,       True,        -1 },
+   { "Pcmanfm",     NULL,       NULL,       1 << 0,       True,        -1 },
+   { "libreoffice", NULL,       NULL,       1 << 5,       True,        -1 },
    {  NULL,         NULL,      "mutt",      1 << 3,       False,       -1 },
    {  NULL,         NULL,      "tmux",      1 << 2,       False,       -1 },
    {  NULL,         NULL,      "ssh",       1 << 0,       False,       -1 },
@@ -36,7 +39,7 @@ static const Rule rules[] = {
 };
 
 /* layout(s) */
-static const float mfact      = 0.55; /* factor of master area size [0.05..0.95] */
+static const float mfact      = 0.60; /* factor of master area size [0.05..0.95] */
 static const int nmaster      = 1;    /* number of clients in master area */
 static const Bool resizehints = False;/* True means respect size hints in tiled resizals */
 
@@ -66,6 +69,7 @@ static const char  *xtermcmd[] = { "xterm",  NULL };
 static const char   *mailcmd[] = { "urxvtc", "-title", "mutt", "-e", "mutt", NULL };
 static const char   *tmuxcmd[] = { "urxvtc", "-title", "tmux", "-e", "tmux", "-f", "/home/jason/.tmux/conf", NULL };
 static const char    *padcmd[] = { "urxvtc", "-title", "scratchpad", "-geometry", "56x10-30+40", NULL };
+static const char *voloffcmd[] = { "amixer", "-q", "sset", "Master", "toggle", NULL };
 static const char   *lockcmd[] = { "xautolock", "-locknow", NULL };
 static const char *rebootcmd[] = { "systemctl", "reboot", NULL };
 static const char   *shutcmd[] = { "systemctl", "poweroff", NULL };
@@ -111,6 +115,11 @@ static Key keys[] = {
 	{ MODKEY,                       XK_Right,  cycle,          {.i = +1 } },
 	{ MODKEY|ControlMask,           XK_Left,   tagcycle,       {.i = -1 } },
 	{ MODKEY|ControlMask,           XK_Right,  tagcycle,       {.i = +1 } },
+	{ 0,                            0x1008ff12,spawn,          {.v = voloffcmd } },
+	{ 0,                            0x1008ff11,spawn,          SHCMD("$HOME/Scripts/volume down") },
+	{ 0,                            0x1008ff13,spawn,          SHCMD("$HOME/Scripts/volume up") },
+	{ 0,                            0x1008ff03,spawn,          SHCMD("$HOME/Scripts/brightness down") },
+	{ 0,                            0x1008ff02,spawn,          SHCMD("$HOME/Scripts/brightness up") },
 	TAGKEYS(                        XK_1,                      0)
 	TAGKEYS(                        XK_2,                      1)
 	TAGKEYS(                        XK_3,                      2)
