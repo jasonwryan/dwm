@@ -7,7 +7,7 @@ VERSION = 6.1
 PREFIX = /usr
 MANPREFIX = ${PREFIX}/share/man
 
-X11INC=/usr/include/X11 
+X11INC=/usr/include/X11
 X11LIB=/usr/lib/X11
 
 # Xinerama, comment if you don't want it
@@ -15,8 +15,8 @@ XINERAMALIBS  = -lXinerama
 XINERAMAFLAGS = -DXINERAMA
 
 # includes and libs
-INCS = -I${X11INC}
-LIBS = -L${X11LIB} -lX11 ${XINERAMALIBS}
+INCS = -I${X11INC} -I/usr/include/freetype2
+LIBS = -L${X11LIB} -lX11 ${XINERAMALIBS} -lutil -lXext -lXft -lfontconfig
 
 # flags
 CPPFLAGS += -D_BSD_SOURCE -D_POSIX_C_SOURCE=2 -DVERSION=\"${VERSION}\" ${XINERAMAFLAGS}

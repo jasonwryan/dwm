@@ -1,17 +1,14 @@
+commit 6ae63ba3fd3da7ac20abc8c9da59ed468c6e29e8
+Author: Jason Ryan <jasonwryan@gmail.com>
+Date:   Thu Mar 5 10:30:00 2015 +1300
+
+    Base config changes for all builds
+
 diff --git a/config.def.h b/config.def.h
-index 8fd5d4a..d5fb5fa 100644
+index 8fd5d4a..db49aec 100644
 --- a/config.def.h
 +++ b/config.def.h
-@@ -1,7 +1,7 @@
- /* See LICENSE file for copyright and license details. */
- 
- /* appearance */
--static const char font[]            = "-*-terminus-medium-r-*-*-16-*-*-*-*-*-*-*";
-+static const char font[]   = "-*-tamsyn-medium-*-*-*-17-*-*-*-*-*-iso8859-*";
- static const char normbordercolor[] = "#444444";
- static const char normbgcolor[]     = "#222222";
- static const char normfgcolor[]     = "#bbbbbb";
-@@ -9,40 +9,44 @@ static const char selbordercolor[]  = "#005577";
+@@ -9,40 +9,42 @@ static const char selbordercolor[]  = "#005577";
  static const char selbgcolor[]      = "#005577";
  static const char selfgcolor[]      = "#eeeeee";
  static const unsigned int borderpx  = 1;        /* border pixel of windows */
@@ -29,12 +26,12 @@ index 8fd5d4a..d5fb5fa 100644
 -	 *	WM_CLASS(STRING) = instance, class
 -	 *	WM_NAME(STRING) = title
 -	 */
--	/* class      instance    title       tags mask     isfloating   monitor */
+ 	/* class      instance    title       tags mask     isfloating   monitor */
 -	{ "Gimp",     NULL,       NULL,       0,            True,        -1 },
 -	{ "Firefox",  NULL,       NULL,       1 << 8,       False,       -1 },
 +   { "Vimprobable", NULL,       NULL,       1 << 1,       False,       -1 },
 +   { "Chromium",    NULL,       NULL,       1 << 0,       False,       -1 },
-+   { "Tabbed",      NULL,       NULL,       1 << 1,       False,       -1 },
++   { "tabbed",      NULL,       NULL,       1 << 1,       False,       -1 },
 +   { "mpv",         NULL,       NULL,       1 << 0,       True,        -1 },
 +   {  NULL,         NULL,      "mutt",      1 << 3,       False,       -1 },
 +   {  NULL,         NULL,      "tmux",      1 << 2,       False,       -1 },
@@ -43,12 +40,10 @@ index 8fd5d4a..d5fb5fa 100644
  };
  
  /* layout(s) */
--static const float mfact      = 0.55; /* factor of master area size [0.05..0.95] */
--static const int nmaster      = 1;    /* number of clients in master area */
+ static const float mfact      = 0.55; /* factor of master area size [0.05..0.95] */
+ static const int nmaster      = 1;    /* number of clients in master area */
 -static const Bool resizehints = True; /* True means respect size hints in tiled resizals */
-+static const float mfact      = 0.60;  /* factor of master area size [0.05..0.95] */
-+static const int nmaster      = 1;     /* number of clients in master area */
-+static const Bool resizehints = False; /* True means respect size hints in tiled resizals */
++static const Bool resizehints = False;/* True means respect size hints in tiled resizals */
  
  static const Layout layouts[] = {
  	/* symbol     arrange function */
@@ -70,7 +65,7 @@ index 8fd5d4a..d5fb5fa 100644
  	{ MODKEY|ShiftMask,             KEY,      tag,            {.ui = 1 << TAG} }, \
  	{ MODKEY|ControlMask|ShiftMask, KEY,      toggletag,      {.ui = 1 << TAG} },
  
-@@ -51,12 +55,29 @@ static const Layout layouts[] = {
+@@ -51,12 +53,28 @@ static const Layout layouts[] = {
  
  /* commands */
  static const char *dmenucmd[] = { "dmenu_run", "-fn", font, "-nb", normbgcolor, "-nf", normfgcolor, "-sb", selbgcolor, "-sf", selfgcolor, NULL };
@@ -97,7 +92,7 @@ index 8fd5d4a..d5fb5fa 100644
 +	{ ControlMask|Mod1Mask,         XK_r,      spawn,          {.v = rebootcmd } },
 +	{ ControlMask|Mod1Mask,         XK_q,      spawn,          {.v = shutcmd } },
 +	{ ControlMask|Mod1Mask,         XK_s,      spawn,          SHCMD("$HOME/Scripts/shux") },
-+	{ ControlMask|Mod1Mask,         XK_w,      spawn,          SHCMD("$(tabbed -d >/tmp/tabbed.xid); vimprobable2 -e $(</tmp/tabbed.xid)") },
++	{ ControlMask|Mod1Mask,         XK_w,      spawn,          SHCMD("$(tabbed -c -d -p -2 >/tmp/tabbed.xid); vimprobable2 -e $(</tmp/tabbed.xid)") },
  	{ MODKEY,                       XK_b,      togglebar,      {0} },
  	{ MODKEY,                       XK_j,      focusstack,     {.i = +1 } },
  	{ MODKEY,                       XK_k,      focusstack,     {.i = -1 } },

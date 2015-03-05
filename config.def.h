@@ -1,8 +1,8 @@
 /* See LICENSE file for copyright and license details. */
 
 /* appearance */
-static const char font[]   = "-*-tamsyn-medium-*-*-*-17-*-*-*-*-*-iso8859-*";
-#define NUMCOLORS 9 
+static const char font[]            = "Dejavu Sans Mono:medium:size=7.5";
+#define NUMCOLORS 9
 static const char colors[NUMCOLORS][ColLast][9] = {
 // border foreground background
 { "#212121", "#696969", "#121212" }, // 0 = normal
@@ -24,13 +24,14 @@ static const Bool topbar            = True;     /* False means bottom bar */
 static const char *tags[] = { "base", "web", "term", "mail", };
 
 static const Rule rules[] = {
+	/* class      instance    title       tags mask     isfloating   monitor */
    { "Vimprobable", NULL,       NULL,       1 << 1,       False,       -1 },
    { "Chromium",    NULL,       NULL,       1 << 0,       False,       -1 },
-   { "Tabbed",      NULL,       NULL,       1 << 1,       False,       -1 },
-   { "Skype",       NULL,       NULL,       1 << 0,       True,        -1 },
-   { "Filezilla",   NULL,       NULL,       1 << 0,       True,        -1 },
-   { "MPlayer",     NULL,       NULL,       1 << 0,       True,        -1 },
-   { "Truecrypt",   NULL,       NULL,       1 << 0,       True,        -1 },
+   { "tabbed",      NULL,       NULL,       1 << 1,       False,       -1 },
+   { "mpv",         NULL,       NULL,       1 << 0,       True,        -1 },
+   { "Gimp",        NULL,       NULL,       1 << 0,       True,        -1 },
+   { "Pcmanfm",     NULL,       NULL,       1 << 0,       True,        -1 },
+   { "libreoffice", NULL,       NULL,       1 << 5,       True,        -1 },
    {  NULL,         NULL,      "mutt",      1 << 3,       False,       -1 },
    {  NULL,         NULL,      "tmux",      1 << 2,       False,       -1 },
    {  NULL,         NULL,      "ssh",       1 << 0,       False,       -1 },
@@ -38,9 +39,9 @@ static const Rule rules[] = {
 };
 
 /* layout(s) */
-static const float mfact      = 0.60;  /* factor of master area size [0.05..0.95] */
-static const int nmaster      = 1;     /* number of clients in master area */
-static const Bool resizehints = False; /* True means respect size hints in tiled resizals */
+static const float mfact      = 0.60; /* factor of master area size [0.05..0.95] */
+static const int nmaster      = 1;    /* number of clients in master area */
+static const Bool resizehints = False;/* True means respect size hints in tiled resizals */
 
 static const Layout layouts[] = {
 	/* symbol     arrange function */
@@ -68,6 +69,7 @@ static const char  *xtermcmd[] = { "xterm",  NULL };
 static const char   *mailcmd[] = { "urxvtc", "-title", "mutt", "-e", "mutt", NULL };
 static const char   *tmuxcmd[] = { "urxvtc", "-title", "tmux", "-e", "tmux", "-f", "/home/jason/.tmux/conf", NULL };
 static const char    *padcmd[] = { "urxvtc", "-title", "scratchpad", "-geometry", "56x10-30+40", NULL };
+static const char *voloffcmd[] = { "amixer", "-q", "sset", "Master", "toggle", NULL };
 static const char   *lockcmd[] = { "xautolock", "-locknow", NULL };
 static const char *rebootcmd[] = { "systemctl", "reboot", NULL };
 static const char   *shutcmd[] = { "systemctl", "poweroff", NULL };
@@ -84,8 +86,7 @@ static Key keys[] = {
 	{ ControlMask|Mod1Mask,         XK_r,      spawn,          {.v = rebootcmd } },
 	{ ControlMask|Mod1Mask,         XK_q,      spawn,          {.v = shutcmd } },
 	{ ControlMask|Mod1Mask,         XK_s,      spawn,          SHCMD("$HOME/Scripts/shux") },
-	{ ControlMask|Mod1Mask,         XK_a,      spawn,          SHCMD("$HOME/Scripts/autostart") },
-	{ ControlMask|Mod1Mask,         XK_w,      spawn,          SHCMD("$(tabbed -d >/tmp/tabbed.xid); vimprobable2 -e $(</tmp/tabbed.xid)") },
+	{ ControlMask|Mod1Mask,         XK_w,      spawn,          SHCMD("$(tabbed -c -d -p -2 >/tmp/tabbed.xid); vimprobable2 -e $(</tmp/tabbed.xid)") },
 	{ MODKEY,                       XK_b,      togglebar,      {0} },
 	{ MODKEY,                       XK_j,      focusstack,     {.i = +1 } },
 	{ MODKEY,                       XK_k,      focusstack,     {.i = -1 } },
@@ -114,6 +115,11 @@ static Key keys[] = {
 	{ MODKEY,                       XK_Right,  cycle,          {.i = +1 } },
 	{ MODKEY|ControlMask,           XK_Left,   tagcycle,       {.i = -1 } },
 	{ MODKEY|ControlMask,           XK_Right,  tagcycle,       {.i = +1 } },
+	{ 0,                            0x1008ff12,spawn,          {.v = voloffcmd } },
+	{ 0,                            0x1008ff11,spawn,          SHCMD("$HOME/Scripts/volume down") },
+	{ 0,                            0x1008ff13,spawn,          SHCMD("$HOME/Scripts/volume up") },
+	{ 0,                            0x1008ff03,spawn,          SHCMD("$HOME/Scripts/brightness down") },
+	{ 0,                            0x1008ff02,spawn,          SHCMD("$HOME/Scripts/brightness up") },
 	TAGKEYS(                        XK_1,                      0)
 	TAGKEYS(                        XK_2,                      1)
 	TAGKEYS(                        XK_3,                      2)

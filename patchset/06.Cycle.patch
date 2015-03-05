@@ -1,8 +1,14 @@
+commit ae28b28e196ebbcd5068ae81fe45700a4e88b0be
+Author: Jason Ryan <jasonwryan@gmail.com>
+Date:   Thu Mar 5 11:31:03 2015 +1300
+
+    Patched for cycling
+
 diff --git a/config.def.h b/config.def.h
-index 8fd5d4a..6072dca 100644
+index 1ad177f..448fcd9 100644
 --- a/config.def.h
 +++ b/config.def.h
-@@ -78,6 +78,10 @@ static Key keys[] = {
+@@ -103,6 +103,10 @@ static Key keys[] = {
  	{ MODKEY,                       XK_period, focusmon,       {.i = +1 } },
  	{ MODKEY|ShiftMask,             XK_comma,  tagmon,         {.i = -1 } },
  	{ MODKEY|ShiftMask,             XK_period, tagmon,         {.i = +1 } },
@@ -14,10 +20,10 @@ index 8fd5d4a..6072dca 100644
  	TAGKEYS(                        XK_2,                      1)
  	TAGKEYS(                        XK_3,                      2)
 diff --git a/dwm.c b/dwm.c
-index 8b67cea..3a6c9ef 100644
+index d41c893..a87e64c 100644
 --- a/dwm.c
 +++ b/dwm.c
-@@ -254,6 +254,9 @@ static int xerror(Display *dpy, XErrorEvent *ee);
+@@ -256,6 +256,9 @@ static int xerror(Display *dpy, XErrorEvent *ee);
  static int xerrordummy(Display *dpy, XErrorEvent *ee);
  static int xerrorstart(Display *dpy, XErrorEvent *ee);
  static void zoom(const Arg *arg);
@@ -27,7 +33,7 @@ index 8b67cea..3a6c9ef 100644
  
  /* variables */
  static const char broken[] = "broken";
-@@ -2167,6 +2170,31 @@ zoom(const Arg *arg) {
+@@ -2186,6 +2189,31 @@ zoom(const Arg *arg) {
  }
  
  int

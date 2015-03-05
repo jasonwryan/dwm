@@ -1,17 +1,14 @@
-From 3ea5e664f3d33443d33cbcf4c1043d01ae77111b Mon Sep 17 00:00:00 2001
-From: Jason Ryan <jasonwryan@gmail.com>
-Date: Sun, 14 Jul 2013 14:31:41 +1200
-Subject: [PATCH] Patched new_master
+commit 9a98a283314581523327ae44442255d7eadb4900
+Author: Jason Ryan <jasonwryan@gmail.com>
+Date:   Thu Mar 5 10:32:32 2015 +1300
 
----
- dwm.c | 12 +++++++++++-
- 1 file changed, 11 insertions(+), 1 deletion(-)
+    Patched for new master
 
 diff --git a/dwm.c b/dwm.c
-index f041955..96df6f6 100644
+index 8b67cea..9d3f527 100644
 --- a/dwm.c
 +++ b/dwm.c
-@@ -1891,10 +1891,20 @@ toggletag(const Arg *arg) {
+@@ -1786,10 +1786,20 @@ toggletag(const Arg *arg) {
  void
  toggleview(const Arg *arg) {
  	unsigned int newtagset = selmon->tagset[selmon->seltags] ^ (arg->ui & TAGMASK);
@@ -33,6 +30,3 @@ index f041955..96df6f6 100644
  		arrange(selmon);
  	}
  }
--- 
-1.8.3.2
-
