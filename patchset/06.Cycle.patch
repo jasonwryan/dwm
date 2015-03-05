@@ -1,0 +1,67 @@
+commit ae28b28e196ebbcd5068ae81fe45700a4e88b0be
+Author: Jason Ryan <jasonwryan@gmail.com>
+Date:   Thu Mar 5 11:31:03 2015 +1300
+
+    Patched for cycling
+
+diff --git a/config.def.h b/config.def.h
+index 1ad177f..448fcd9 100644
+--- a/config.def.h
++++ b/config.def.h
+@@ -103,6 +103,10 @@ static Key keys[] = {
+ 	{ MODKEY,                       XK_period, focusmon,       {.i = +1 } },
+ 	{ MODKEY|ShiftMask,             XK_comma,  tagmon,         {.i = -1 } },
+ 	{ MODKEY|ShiftMask,             XK_period, tagmon,         {.i = +1 } },
++	{ MODKEY,                       XK_Left,   cycle,          {.i = -1 } },
++	{ MODKEY,                       XK_Right,  cycle,          {.i = +1 } },
++	{ MODKEY|ControlMask,           XK_Left,   tagcycle,       {.i = -1 } },
++	{ MODKEY|ControlMask,           XK_Right,  tagcycle,       {.i = +1 } },
+ 	TAGKEYS(                        XK_1,                      0)
+ 	TAGKEYS(                        XK_2,                      1)
+ 	TAGKEYS(                        XK_3,                      2)
+diff --git a/dwm.c b/dwm.c
+index d41c893..a87e64c 100644
+--- a/dwm.c
++++ b/dwm.c
+@@ -256,6 +256,9 @@ static int xerror(Display *dpy, XErrorEvent *ee);
+ static int xerrordummy(Display *dpy, XErrorEvent *ee);
+ static int xerrorstart(Display *dpy, XErrorEvent *ee);
+ static void zoom(const Arg *arg);
++static void cycle(const Arg *arg);
++static int shifttag(int dist);
++static void tagcycle(const Arg *arg);
+ 
+ /* variables */
+ static const char broken[] = "broken";
+@@ -2186,6 +2189,31 @@ zoom(const Arg *arg) {
+ }
+ 
+ int
++shifttag(int dist) {
++   int seltags = selmon->tagset[selmon->seltags] & TAGMASK;
++
++   if(dist > 0) // left circular shift
++       seltags = (seltags << dist) | (seltags >> (LENGTH(tags) - dist));
++   else // right circular shift
++       seltags = (seltags >> (- dist)) | (seltags << (LENGTH(tags) + dist));
++
++   return seltags;
++}
++
++void
++cycle(const Arg *arg) {
++   const Arg a = { .i = shifttag(arg->i) };
++   view(&a);
++}
++
++void
++tagcycle(const Arg *arg) {
++   const Arg a = { .i = shifttag(arg->i) };
++   tag(&a);
++   view(&a);
++}
++
++int
+ main(int argc, char *argv[]) {
+ 	if(argc == 2 && !strcmp("-v", argv[1]))
+ 		die("dwm-"VERSION", © 2006-2012 dwm engineers, see LICENSE for details\n");
