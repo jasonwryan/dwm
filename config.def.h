@@ -1,7 +1,7 @@
 /* See LICENSE file for copyright and license details. */
 
 /* appearance */
-static const char font[]            = "Dejavu Sans Mono:medium:size=10.5";
+static const char font[]            = "Dejavu Sans Mono:medium:size=6";
 #define NUMCOLORS 9
 static const char colors[NUMCOLORS][ColLast][9] = {
 // border foreground background
@@ -21,7 +21,7 @@ static const Bool showbar           = True;     /* False means no bar */
 static const Bool topbar            = True;     /* False means bottom bar */
 
 /* tagging */
-static const char *tags[] = { "base", "web", "term", "mail", };
+static const char *tags[] = { "base", "web", "term", "mail", "cal", "docs", };
 
 static const Rule rules[] = {
 	/* class      instance    title       tags mask     isfloating   monitor */
@@ -31,6 +31,9 @@ static const Rule rules[] = {
    { "mpv",         NULL,       NULL,       1 << 0,       True,        -1 },
    { "Gimp",        NULL,       NULL,       1 << 0,       True,        -1 },
    { "Pcmanfm",     NULL,       NULL,       1 << 0,       True,        -1 },
+   { "libreoffice", NULL,       NULL,       1 << 5,       False,       -1 },
+   { "Thunderbird", NULL,       NULL,       1 << 4,       False,       -1 },
+   { "qemu",        NULL,       NULL,       1 << 0,       True,        -1 },
    {  NULL,         NULL,      "mutt",      1 << 3,       False,       -1 },
    {  NULL,         NULL,      "tmux",      1 << 2,       False,       -1 },
    {  NULL,         NULL,      "ssh",       1 << 0,       False,       -1 },
@@ -38,7 +41,7 @@ static const Rule rules[] = {
 };
 
 /* layout(s) */
-static const float mfact      = 0.55; /* factor of master area size [0.05..0.95] */
+static const float mfact      = 0.60; /* factor of master area size [0.05..0.95] */
 static const int nmaster      = 1;    /* number of clients in master area */
 static const Bool resizehints = False;/* True means respect size hints in tiled resizals */
 
@@ -69,6 +72,12 @@ static const char   *mailcmd[] = { "urxvtc", "-title", "mutt", "-e", "mutt", NUL
 static const char   *tmuxcmd[] = { "urxvtc", "-title", "tmux", "-e", "tmux", "-f", "/home/jason/.tmux/conf", NULL };
 static const char    *padcmd[] = { "urxvtc", "-title", "scratchpad", "-geometry", "56x10-30+40", NULL };
 static const char   *lockcmd[] = { "xautolock", "-locknow", NULL };
+static const char *voloffcmd[] = { "amixer", "-q", "sset", "Master", "toggle", NULL };
+static const char  *mpconcmd[] = { "mpc", "toggle", NULL };
+static const char *mpcoffcmd[] = { "mpc", "stop", NULL };
+static const char *mpcnexcmd[] = { "mpc", "next", NULL };
+static const char *mpcprecmd[] = { "mpc", "prev", NULL };
+static const char  *sleepcmd[] = { "systemctl", "suspend", NULL };
 static const char *rebootcmd[] = { "systemctl", "reboot", NULL };
 static const char   *shutcmd[] = { "systemctl", "poweroff", NULL };
 
@@ -113,6 +122,17 @@ static Key keys[] = {
 	{ MODKEY,                       XK_Right,  cycle,          {.i = +1 } },
 	{ MODKEY|ControlMask,           XK_Left,   tagcycle,       {.i = -1 } },
 	{ MODKEY|ControlMask,           XK_Right,  tagcycle,       {.i = +1 } },
+	{ 0,                            0x1008ff12,spawn,          {.v = voloffcmd } },
+	{ 0,                            0x1008ff11,spawn,          SHCMD("$HOME/Scripts/volume down") }, 
+	{ 0,                            0x1008ff13,spawn,          SHCMD("$HOME/Scripts/volume up") },
+	{ 0,                            0x1008ff03,spawn,          SHCMD("$HOME/Scripts/brightness down") },
+	{ 0,                            0x1008ff02,spawn,          SHCMD("$HOME/Scripts/brightness up") },
+	{ 0,                            0x1008ffb1,spawn,          SHCMD("$HOME/Scripts/touchpad") },
+	{ 0,                            0x1008ff14,spawn,          {.v = mpconcmd } },
+	{ 0,                            0x1008ff15,spawn,          {.v = mpcoffcmd } },
+	{ 0,                            0x1008ff16,spawn,          {.v = mpcprecmd } },
+	{ 0,                            0x1008ff17,spawn,          {.v = mpcnexcmd } },
+	{ 0,                            0x1008ff2f,spawn,          {.v = sleepcmd } },
 	TAGKEYS(                        XK_1,                      0)
 	TAGKEYS(                        XK_2,                      1)
 	TAGKEYS(                        XK_3,                      2)
