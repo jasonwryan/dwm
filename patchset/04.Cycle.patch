@@ -1,0 +1,61 @@
+diff --git a/config.def.h b/config.def.h
+index bae272a..46a4bfc 100644
+--- a/config.def.h
++++ b/config.def.h
+@@ -110,6 +110,10 @@ static Key keys[] = {
+ 	{ MODKEY,                       XK_period, focusmon,       {.i = +1 } },
+ 	{ MODKEY|ShiftMask,             XK_comma,  tagmon,         {.i = -1 } },
+ 	{ MODKEY|ShiftMask,             XK_period, tagmon,         {.i = +1 } },
++	{ MODKEY,                       XK_Left,   cycle,          {.i = -1 } },
++	{ MODKEY,                       XK_Right,  cycle,          {.i = +1 } },
++	{ MODKEY|ControlMask,           XK_Left,   tagcycle,       {.i = -1 } },
++	{ MODKEY|ControlMask,           XK_Right,  tagcycle,       {.i = +1 } },
+ 	TAGKEYS(                        XK_1,                      0)
+ 	TAGKEYS(                        XK_2,                      1)
+ 	TAGKEYS(                        XK_3,                      2)
+diff --git a/dwm.c b/dwm.c
+index 3ce8ff5..a91e185 100644
+--- a/dwm.c
++++ b/dwm.c
+@@ -234,6 +234,9 @@ static int xerror(Display *dpy, XErrorEvent *ee);
+ static int xerrordummy(Display *dpy, XErrorEvent *ee);
+ static int xerrorstart(Display *dpy, XErrorEvent *ee);
+ static void zoom(const Arg *arg);
++static void cycle(const Arg *arg);
++static int shifttag(int dist);
++static void tagcycle(const Arg *arg);
+ 
+ /* variables */
+ static const char broken[] = "broken";
+@@ -2127,6 +2130,31 @@ zoom(const Arg *arg)
+ }
+ 
+ int
++shifttag(int dist) {
++   int seltags = selmon->tagset[selmon->seltags] & TAGMASK;
++
++   if(dist > 0) // left circular shift
++       seltags = (seltags << dist) | (seltags >> (LENGTH(tags) - dist));
++   else // right circular shift
++       seltags = (seltags >> (- dist)) | (seltags << (LENGTH(tags) + dist));
++
++   return seltags;
++}
++
++void
++cycle(const Arg *arg) {
++   const Arg a = { .i = shifttag(arg->i) };
++   view(&a);
++}
++
++void
++tagcycle(const Arg *arg) {
++   const Arg a = { .i = shifttag(arg->i) };
++   tag(&a);
++   view(&a);
++}
++
++int
+ main(int argc, char *argv[])
+ {
+ 	if (argc == 2 && !strcmp("-v", argv[1]))
