@@ -206,6 +206,26 @@ drw_setscheme(Drw *drw, ClrScheme *scheme)
 	drw->scheme = scheme;
 }
 
+int
+drw_get_width(Drw *drw, int numcolors, const char *text)
+{
+	int i;
+	Fnt *curfont = drw->fonts[0];
+	int w = drw_text(drw, 0, 0, 0, 0, text, 0) + curfont->h;
+
+	for (i = 0; i < strlen(text); i++) {
+		if (text[i] > 0 && text[i] <= numcolors) {
+			/* we found a color code
+			 * drw_text counted it as a normal character and added one character's width
+			 * we aren't going to render this character, so we remove one character's width */
+			w -= curfont->xfont->max_advance_width;
+
+		}
+	}
+
+  return w;
+}
+
 void
 drw_rect(Drw *drw, int x, int y, unsigned int w, unsigned int h, int filled, int empty, int invert)
 {
@@ -219,7 +239,7 @@ drw_rect(Drw *drw, int x, int y, unsigned int w, unsigned int h, int filled, int
 }
 
 int
-drw_text(Drw *drw, int x, int y, unsigned int w, unsigned int h, const char *text, int invert)
+drw_text_(Drw *drw, int x, int y, unsigned int w, unsigned int h, const char *text, int invert, int color, ClrScheme *scheme, int numcolors)
 {
 	char buf[1024];
 	int tx, ty, th;
@@ -235,6 +255,7 @@ drw_text(Drw *drw, int x, int y, unsigned int w, unsigned int h, const char *tex
 	FcPattern *match;
 	XftResult result;
 	int charexists = 0;
+	int colorScheme = 0;
 
 	if (!drw->scheme || !drw->fontcount)
 		return 0;
@@ -256,7 +277,14 @@ drw_text(Drw *drw, int x, int y, unsigned int w, unsigned int h, const char *tex
 		utf8str = text;
 		nextfont = NULL;
 		while (*text) {
+
+			if (color && scheme && *text > 0 && *text <= numcolors) {
+				colorScheme = 1;
+				break;
+			}
+
 			utf8charlen = utf8decode(text, &utf8codepoint, UTF_SIZ);
+
 			for (i = 0; i < drw->fontcount; i++) {
 				charexists = charexists || XftCharExists(drw->dpy, drw->fonts[i]->xfont, utf8codepoint);
 				if (charexists) {
@@ -304,6 +332,10 @@ drw_text(Drw *drw, int x, int y, unsigned int w, unsigned int h, const char *tex
 		} else if (nextfont) {
 			charexists = 0;
 			curfont = nextfont;
+		} else if (colorScheme) {
+			drw_setscheme(drw, &scheme[*text-1]);
+			text++;
+			colorScheme = 0;
 		} else {
 			/* Regardless of whether or not a fallback font is found, the
 			 * character must be drawn.
