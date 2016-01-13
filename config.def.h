@@ -1,5 +1,4 @@
 /* See LICENSE file for copyright and license details. */
-
 /* appearance */
 static const char    *fonts[] = { "Dejavu Sans Mono:medium:size=7.5" };
 static const char dmenufont[] = "Dejavu Sans Mono:medium:size=7.5";
@@ -68,7 +67,7 @@ static const Layout layouts[] = {
 
 /* commands */
 static char dmenumon[2] = "0"; /* component of dmenucmd, manipulated in spawn() */
-static const char  *dmenucmd[] = { "dmenu_run", "-m", dmenumon, "-fn", dmenufont, "-nb", colors[0][0], "-nf", colors[1][0], "-sb", colors[0][0], "-sf", colors[0][5], NULL };
+static const char *dmenucmd[] = { "dmenu_run", "-m", dmenumon, "-fn", dmenufont, "-nb", colors[0][2], "-nf", colors[0][1], "-sb", colors[1][2], "-sf", colors[1][1], NULL };
 static const char   *termcmd[] = { "urxvtc", NULL };
 static const char  *xtermcmd[] = { "xterm",  NULL };
 static const char   *mailcmd[] = { "urxvtc", "-title", "mutt", "-e", "mutt", NULL };
@@ -81,7 +80,7 @@ static const char   *shutcmd[] = { "systemctl", "poweroff", NULL };
 
 static Key keys[] = {
 	/* modifier                     key        function        argument */
-	{ 0,                            XK_Menu,   spawn,          {.v = dmenucmd } },
+	{ 0,                            XK_Menu,   spawn,       {.v = dmenucmd } },
 	{ MODKEY|ShiftMask,             XK_Return, spawn,          {.v = termcmd } },
 	{ ControlMask|Mod1Mask,         XK_m,      spawn,          {.v = mailcmd } },
 	{ ControlMask|Mod1Mask,         XK_x,      spawn,          {.v = xtermcmd } },

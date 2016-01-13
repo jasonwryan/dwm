@@ -33,7 +33,7 @@ index 359e48b..bae272a 100644
  /* commands */
  static char dmenumon[2] = "0"; /* component of dmenucmd, manipulated in spawn() */
 -static const char  *dmenucmd[] = { "dmenu_run", "-m", dmenumon, "-fn", dmenufont, "-nb", normbgcolor, "-nf", normfgcolor, "-sb", selbgcolor, "-sf", selfgcolor, NULL };
-+static const char  *dmenucmd[] = { "dmenu_run", "-m", dmenumon, "-fn", dmenufont, "-nb", colors[0][0], "-nf", colors[1][0], "-sb", colors[0][0], "-sf", colors[0][5], NULL };
++static const char  *dmenucmd[] = { "dmenu_run", "-m", dmenumon, "-fn", dmenufont, "-nb", colors[0][2], "-nf", colors[0][1], "-sb", colors[1][2], "-sf", colors[1][1], NULL };
  static const char   *termcmd[] = { "urxvtc", NULL };
  static const char  *xtermcmd[] = { "xterm",  NULL };
  static const char   *mailcmd[] = { "urxvtc", "-title", "mutt", "-e", "mutt", NULL };
