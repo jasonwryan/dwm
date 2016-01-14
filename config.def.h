@@ -5,12 +5,19 @@ static const char *fonts[] = {
 	"monospace:size=10"
 };
 static const char dmenufont[]       = "monospace:size=10";
-static const char normbordercolor[] = "#444444";
-static const char normbgcolor[]     = "#222222";
-static const char normfgcolor[]     = "#bbbbbb";
-static const char selbordercolor[]  = "#005577";
-static const char selbgcolor[]      = "#005577";
-static const char selfgcolor[]      = "#eeeeee";
+#define NUMCOLORS 9
+static const char colors[NUMCOLORS][MAXCOLORS][9] = {
+// border foreground background
+{ "#212121", "#696969", "#121212" }, // 0 = normal
+{ "#696969", "#E0E0E0", "#121212" }, // 1 = selected
+{ "#212121", "#CF4F88", "#121212" }, // 2 = red
+{ "#212121", "#53A6A6", "#121212" }, // 3 = green
+{ "#212121", "#BF85CC", "#121212" }, // 4 = yellow
+{ "#212121", "#4779B3", "#121212" }, // 5 = blue
+{ "#212121", "#47959E", "#121212" }, // 6 = cyan
+{ "#212121", "#7E62B3", "#121212" }, // 7 = magenta
+{ "#212121", "#899CA1", "#121212" }, // 8 = grey
+};
 static const unsigned int borderpx  = 1;        /* border pixel of windows */
 static const unsigned int snap      = 8;        /* snap pixel */
 static const int showbar            = 1;        /* 0 means no bar */
@@ -60,7 +67,7 @@ static const Layout layouts[] = {
 
 /* commands */
 static char dmenumon[2] = "0"; /* component of dmenucmd, manipulated in spawn() */
-static const char  *dmenucmd[] = { "dmenu_run", "-m", dmenumon, "-fn", dmenufont, "-nb", normbgcolor, "-nf", normfgcolor, "-sb", selbgcolor, "-sf", selfgcolor, NULL };
+static const char  *dmenucmd[] = { "dmenu_run", "-m", dmenumon, "-fn", dmenufont, "-nb", colors[0][2], "-nf", colors[0][1], "-sb", colors[1][2], "-sf", colors[1][1], NULL };
 static const char   *termcmd[] = { "urxvtc", NULL };
 static const char  *xtermcmd[] = { "xterm",  NULL };
 static const char   *mailcmd[] = { "urxvtc", "-title", "mutt", "-e", "mutt", NULL };

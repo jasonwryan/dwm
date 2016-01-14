@@ -67,8 +67,15 @@ void drw_setfont(Drw *, Fnt *);
 void drw_setscheme(Drw *, ClrScheme *);
 
 /* Drawing functions */
+int drw_get_width(Drw *, int, const char *);
 void drw_rect(Drw *, int, int, unsigned int, unsigned int, int, int, int);
-int drw_text(Drw *, int, int, unsigned int, unsigned int, const char *, int);
+int drw_text_(Drw *, int, int, unsigned int, unsigned int, const char *, int, int, ClrScheme *, int);
+
+#define drw_colored_text(drw, scheme, numcolors, x, y, w, h, text) \
+	drw_text_(drw, x, y, w, h, text, 0, 1, scheme, numcolors)
+
+#define drw_text(drw, x, y, w, h, text, invert) \
+	drw_text_(drw, x, y, w, h, text, invert, 0, NULL, 0)
 
 /* Map functions */
 void drw_map(Drw *, Window, int, int, unsigned int, unsigned int);

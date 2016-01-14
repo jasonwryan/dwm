@@ -51,6 +51,7 @@
                                * MAX(0, MIN((y)+(h),(m)->wy+(m)->wh) - MAX((y),(m)->wy)))
 #define ISVISIBLE(C)            ((C->tags & C->mon->tagset[C->mon->seltags]))
 #define LENGTH(X)               (sizeof X / sizeof X[0])
+#define MAXCOLORS               9
 #define MOUSEMASK               (BUTTONMASK|PointerMotionMask)
 #define WIDTH(X)                ((X)->w + 2 * (X)->bw)
 #define HEIGHT(X)               ((X)->h + 2 * (X)->bw)
@@ -261,7 +262,7 @@ static void (*handler[LASTEvent]) (XEvent *) = {
 static Atom wmatom[WMLast], netatom[NetLast];
 static int running = 1;
 static Cur *cursor[CurLast];
-static ClrScheme scheme[SchemeLast];
+static ClrScheme scheme[MAXCOLORS];
 static Display *dpy;
 static Drw *drw;
 static Monitor *mons, *selmon;
@@ -723,35 +724,35 @@ drawbar(Monitor *m)
 	x = 0;
 	for (i = 0; i < LENGTH(tags); i++) {
 		w = TEXTW(tags[i]);
-		drw_setscheme(drw, m->tagset[m->seltags] & 1 << i ? &scheme[SchemeSel] : &scheme[SchemeNorm]);
-		drw_text(drw, x, 0, w, bh, tags[i], urg & 1 << i);
+		drw_setscheme(drw, &scheme[(m->tagset[m->seltags] & 1 << i) ? 1 : (urg & 1 << i ? 2 : 0)]);
+		drw_text(drw, x, 0, w, bh, tags[i], 0);
 		drw_rect(drw, x + 1, 1, dx, dx, m == selmon && selmon->sel && selmon->sel->tags & 1 << i,
-		           occ & 1 << i, urg & 1 << i);
+		         occ & 1 << i, 0);
 		x += w;
 	}
 	w = blw = TEXTW(m->ltsymbol);
-	drw_setscheme(drw, &scheme[SchemeNorm]);
+	drw_setscheme(drw, &scheme[0]);
 	drw_text(drw, x, 0, w, bh, m->ltsymbol, 0);
 	x += w;
 	xx = x;
 	if (m == selmon) { /* status is only drawn on selected monitor */
-		w = TEXTW(stext);
+		w = drw_get_width(drw, NUMCOLORS, stext);
 		x = m->ww - w;
 		if (x < xx) {
 			x = xx;
 			w = m->ww - xx;
 		}
-		drw_text(drw, x, 0, w, bh, stext, 0);
+		drw_colored_text(drw, scheme, NUMCOLORS, x, 0, w, bh, stext);
 	} else
 		x = m->ww;
 	if ((w = x - xx) > bh) {
 		x = xx;
 		if (m->sel) {
-			drw_setscheme(drw, m == selmon ? &scheme[SchemeSel] : &scheme[SchemeNorm]);
+			drw_setscheme(drw, &scheme[m == selmon ? 1 : 0]);
 			drw_text(drw, x, 0, w, bh, m->sel->name, 0);
 			drw_rect(drw, x + 1, 1, dx, dx, m->sel->isfixed, m->sel->isfloating, 0);
 		} else {
-			drw_setscheme(drw, &scheme[SchemeNorm]);
+			drw_setscheme(drw, &scheme[0]);
 			drw_rect(drw, x, 0, w, bh, 1, 0, 1);
 		}
 	}
@@ -812,7 +813,7 @@ focus(Client *c)
 		detachstack(c);
 		attachstack(c);
 		grabbuttons(c, 1);
-		XSetWindowBorder(dpy, c->win, scheme[SchemeSel].border->pix);
+		XSetWindowBorder(dpy, c->win, scheme[1].border->pix);
 		setfocus(c);
 	} else {
 		XSetInputFocus(dpy, root, RevertToPointerRoot, CurrentTime);
@@ -1070,7 +1071,7 @@ manage(Window w, XWindowAttributes *wa)
 
 	wc.border_width = c->bw;
 	XConfigureWindow(dpy, w, CWBorderWidth, &wc);
-	XSetWindowBorder(dpy, w, scheme[SchemeNorm].border->pix);
+	XSetWindowBorder(dpy, w, scheme[0].border->pix);
 	configure(c); /* propagates border_width, if size doesn't change */
 	updatewindowtype(c);
 	updatesizehints(c);
@@ -1585,12 +1586,12 @@ setup(void)
 	cursor[CurResize] = drw_cur_create(drw, XC_sizing);
 	cursor[CurMove] = drw_cur_create(drw, XC_fleur);
 	/* init appearance */
-	scheme[SchemeNorm].border = drw_clr_create(drw, normbordercolor);
-	scheme[SchemeNorm].bg = drw_clr_create(drw, normbgcolor);
-	scheme[SchemeNorm].fg = drw_clr_create(drw, normfgcolor);
-	scheme[SchemeSel].border = drw_clr_create(drw, selbordercolor);
-	scheme[SchemeSel].bg = drw_clr_create(drw, selbgcolor);
-	scheme[SchemeSel].fg = drw_clr_create(drw, selfgcolor);
+	for(int i = 0; i < NUMCOLORS; i++){
+		scheme[i].border = drw_clr_create(drw, colors[i][0]);
+		scheme[i].fg = drw_clr_create(drw, colors[i][1]);
+		scheme[i].bg = drw_clr_create(drw, colors[i][2]);
+	}
+
 	/* init bars */
 	updatebars();
 	updatestatus();
@@ -1750,7 +1751,7 @@ unfocus(Client *c, int setfocus)
 	if (!c)
 		return;
 	grabbuttons(c, 0);
-	XSetWindowBorder(dpy, c->win, scheme[SchemeNorm].border->pix);
+	XSetWindowBorder(dpy, c->win, scheme[0].border->pix);
 	if (setfocus) {
 		XSetInputFocus(dpy, root, RevertToPointerRoot, CurrentTime);
 		XDeleteProperty(dpy, root, netatom[NetActiveWindow]);
