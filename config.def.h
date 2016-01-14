@@ -12,12 +12,12 @@ static const char selbordercolor[]  = "#005577";
 static const char selbgcolor[]      = "#005577";
 static const char selfgcolor[]      = "#eeeeee";
 static const unsigned int borderpx  = 1;        /* border pixel of windows */
-static const unsigned int snap      = 32;       /* snap pixel */
+static const unsigned int snap      = 8;        /* snap pixel */
 static const int showbar            = 1;        /* 0 means no bar */
 static const int topbar             = 1;        /* 0 means bottom bar */
 
 /* tagging */
-static const char *tags[] = { "1", "2", "3", "4", "5", "6", "7", "8", "9" };
+static const char *tags[] = { "base", "web", "term", "mail", };
 
 static const Rule rules[] = {
 	/* xprop(1):
@@ -25,27 +25,33 @@ static const Rule rules[] = {
 	 *	WM_NAME(STRING) = title
 	 */
 	/* class      instance    title       tags mask     isfloating   monitor */
-	{ "Gimp",     NULL,       NULL,       0,            1,           -1 },
-	{ "Firefox",  NULL,       NULL,       1 << 8,       0,           -1 },
+   { "Vimb",        NULL,       NULL,       1 << 1,       False,       -1 },
+   { "Chromium",    NULL,       NULL,       1 << 0,       False,       -1 },
+   { "tabbed",      NULL,       NULL,       1 << 1,       False,       -1 },
+   { "mpv",         NULL,       NULL,       1 << 0,       True,        -1 },
+   {  NULL,         NULL,      "mutt",      1 << 3,       False,       -1 },
+   {  NULL,         NULL,      "tmux",      1 << 2,       False,       -1 },
+   {  NULL,         NULL,      "ssh",       1 << 0,       False,       -1 },
+   {  NULL,         NULL,      "scratchpad",     0,       True,        -1 },
 };
 
 /* layout(s) */
 static const float mfact     = 0.55; /* factor of master area size [0.05..0.95] */
 static const int nmaster     = 1;    /* number of clients in master area */
-static const int resizehints = 1;    /* 1 means respect size hints in tiled resizals */
+static const int resizehints = 0;    /* 1 means respect size hints in tiled resizals */
 
 static const Layout layouts[] = {
 	/* symbol     arrange function */
-	{ "[]=",      tile },    /* first entry is default */
-	{ "><>",      NULL },    /* no layout function means floating behavior */
+	{ "[T]",      tile },    /* first entry is default */
+	{ "[F]",      NULL },    /* no layout function means floating behavior */
 	{ "[M]",      monocle },
 };
 
 /* key definitions */
-#define MODKEY Mod1Mask
+#define MODKEY Mod4Mask
 #define TAGKEYS(KEY,TAG) \
-	{ MODKEY,                       KEY,      view,           {.ui = 1 << TAG} }, \
-	{ MODKEY|ControlMask,           KEY,      toggleview,     {.ui = 1 << TAG} }, \
+	{ MODKEY,                       KEY,      toggleview,     {.ui = 1 << TAG} }, \
+	{ MODKEY|ControlMask,           KEY,      view,           {.ui = 1 << TAG} }, \
 	{ MODKEY|ShiftMask,             KEY,      tag,            {.ui = 1 << TAG} }, \
 	{ MODKEY|ControlMask|ShiftMask, KEY,      toggletag,      {.ui = 1 << TAG} },
 
@@ -54,13 +60,28 @@ static const Layout layouts[] = {
 
 /* commands */
 static char dmenumon[2] = "0"; /* component of dmenucmd, manipulated in spawn() */
-static const char *dmenucmd[] = { "dmenu_run", "-m", dmenumon, "-fn", dmenufont, "-nb", normbgcolor, "-nf", normfgcolor, "-sb", selbgcolor, "-sf", selfgcolor, NULL };
-static const char *termcmd[]  = { "st", NULL };
+static const char  *dmenucmd[] = { "dmenu_run", "-m", dmenumon, "-fn", dmenufont, "-nb", normbgcolor, "-nf", normfgcolor, "-sb", selbgcolor, "-sf", selfgcolor, NULL };
+static const char   *termcmd[] = { "urxvtc", NULL };
+static const char  *xtermcmd[] = { "xterm",  NULL };
+static const char   *mailcmd[] = { "urxvtc", "-title", "mutt", "-e", "mutt", NULL };
+static const char   *tmuxcmd[] = { "urxvtc", "-title", "tmux", "-e", "tmux", "-f", "/home/jason/.tmux/conf", NULL };
+static const char    *padcmd[] = { "urxvtc", "-title", "scratchpad", "-geometry", "56x10-30+40", NULL };
+static const char   *lockcmd[] = { "xautolock", "-locknow", NULL };
+static const char *rebootcmd[] = { "systemctl", "reboot", NULL };
+static const char   *shutcmd[] = { "systemctl", "poweroff", NULL };
 
 static Key keys[] = {
 	/* modifier                     key        function        argument */
-	{ MODKEY,                       XK_p,      spawn,          {.v = dmenucmd } },
+	{ 0,                            XK_Menu,   spawn,          {.v = dmenucmd } },
 	{ MODKEY|ShiftMask,             XK_Return, spawn,          {.v = termcmd } },
+	{ ControlMask|Mod1Mask,         XK_m,      spawn,          {.v = mailcmd } },
+	{ ControlMask|Mod1Mask,         XK_x,      spawn,          {.v = xtermcmd } },
+	{ ControlMask|Mod1Mask,         XK_t,      spawn,          {.v = tmuxcmd } },
+	{ ControlMask|Mod1Mask,         XK_l,      spawn,          {.v = lockcmd } },
+	{ ControlMask|Mod1Mask,         XK_p,      spawn,          {.v = padcmd } },
+	{ ControlMask|Mod1Mask,         XK_r,      spawn,          {.v = rebootcmd } },
+	{ ControlMask|Mod1Mask,         XK_q,      spawn,          {.v = shutcmd } },
+	{ ControlMask|Mod1Mask,         XK_w,      spawn,          SHCMD("$(tabbed -c -d -p -2 >/tmp/tabbed.xid); vimb -e $(</tmp/tabbed.xid)") },
 	{ MODKEY,                       XK_b,      togglebar,      {0} },
 	{ MODKEY,                       XK_j,      focusstack,     {.i = +1 } },
 	{ MODKEY,                       XK_k,      focusstack,     {.i = -1 } },
