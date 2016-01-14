@@ -1,10 +1,8 @@
 /* See LICENSE file for copyright and license details. */
 
 /* appearance */
-static const char *fonts[] = {
-	"monospace:size=10"
-};
-static const char dmenufont[]       = "monospace:size=10";
+static const char *fonts[]    = { "Dejavu Sans Mono:medium:size=10.5" };
+static const char dmenufont[] =   "Dejavu Sans Mono:medium:size=10.5"  ;
 #define NUMCOLORS 9
 static const char colors[NUMCOLORS][MAXCOLORS][9] = {
 // border foreground background
@@ -36,6 +34,11 @@ static const Rule rules[] = {
    { "Chromium",    NULL,       NULL,       1 << 0,       False,       -1 },
    { "tabbed",      NULL,       NULL,       1 << 1,       False,       -1 },
    { "mpv",         NULL,       NULL,       1 << 0,       True,        -1 },
+   { "Gimp",        NULL,       NULL,       1 << 0,       True,        -1 },
+   { "XSane",       NULL,       NULL,       1 << 0,       True,        -1 },
+   { "Pcmanfm",     NULL,       NULL,       1 << 0,       True,        -1 },
+   { "Asunder",     NULL,       NULL,       1 << 0,       True,        -1 },
+   { "libreoffice", NULL,       NULL,       1 << 5,       True,        -1 },
    {  NULL,         NULL,      "mutt",      1 << 3,       False,       -1 },
    {  NULL,         NULL,      "tmux",      1 << 2,       False,       -1 },
    {  NULL,         NULL,      "ssh",       1 << 0,       False,       -1 },
@@ -43,7 +46,7 @@ static const Rule rules[] = {
 };
 
 /* layout(s) */
-static const float mfact     = 0.55; /* factor of master area size [0.05..0.95] */
+static const float mfact     = 0.60; /* factor of master area size [0.05..0.95] */
 static const int nmaster     = 1;    /* number of clients in master area */
 static const int resizehints = 0;    /* 1 means respect size hints in tiled resizals */
 
